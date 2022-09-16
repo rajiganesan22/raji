@@ -1,66 +1,128 @@
-player2 = 'raji'
+!DOCTYPE html>
+<html lang="en">
 
-matchTotalScore = { 'system': 0 }    //{ System: 0, raji: 0 }
-matchTotalScore[player2] = 0
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
 
-nameOfPlayers = Object.keys(matchTotalScore)
+<body>
+    <script>
+
+        finalTable = []
+        round = 1
+        overallScore = { Computer: 0, Player: 0 }
+        b = setInterval(() => {
+            numberOfToss()
+
+            if (round == 3) {
+
+                clearInterval(b)
+
+            } round++
+
+        }, 15000);
 
 
-function HeadOrTail(number) {
-    value = (number > 0) ? "Head" : "Tails"
-    return value
-}
+        i = 1
+        function numberOfToss() {
+            console.log(`***********Round ${i}************`);
+            i++
+            r = 1
+            calculateHead = { Computer: 0, Player: 0 }
+            coin = ["head", "tail"]
 
-pointsOfplayer1 = []
-pointsOfplayer2 = []
+            a = setInterval(() => {
+                t1 = coin[Math.floor(Math.random() * 2)]
+                t2 = coin[Math.floor(Math.random() * 2)]
 
-function tossHeadWinMatch(players,pointsOfplayer1, pointsOfplayer2, matchTotalScore, tossNo) {
-    coinOfPlayer1 = Math.floor(Math.random() * 2)
-    coinOfPlayer2 = Math.floor(Math.random() * 2)
-    coinOfPlayer1 != 0 && pointsOfplayer1.push(1) & (matchTotalScore['system'] = matchTotalScore['system'] + 1)+
-    coinOfPlayer2 != 0 && pointsOfplayer2.push(1) & (matchTotalScore['raji'] = matchTotalScore['raji'] + 1)
-    return (`'Toss:' ${Math.abs(tossNo-10)+1} , ${players[0]}  gets ${(HeadOrTail(coinOfPlayer1)).padEnd(0,11)}  - ${players[1]}  gets ${HeadOrTail(coinOfPlayer2)}`)
-}
+                if (t1 == "head") {
+                    calculateHead.Computer += 1
+                    overallScore.Computer += 1
+                }
+                if (t2 == "head") {
+                    calculateHead.Player += 1
+                    overallScore.Player += 1
+                }
+                console.log(`Toss No. :- ${r}`)
+                console.log("Computer:", t1, "\n", "Player:", t2, "\n")
+                finalTable.push({ "Round": round, "Computer": t1, "Player": t2 })
+
+                if (r == 10) {
+                    clearInterval(a)
+                    console.log("No. of Heads:-")
+                    console.table(calculateHead)
+                    findingWinner()
+                }
+                r++
+            }, 1000);
+
+        }
+        numberOfToss()
 
 
-function printingRoundSummary(playersName,player1Points, player2Points) {
-    if (player1Points.length > player2Points.length) {
-        return (`\n\nThe ${playersName[0]} win the round by, ${player1Points.length - player2Points.length} points difference\n\n`)
+
+        function findingWinner() {
+            if (calculateHead.Computer > calculateHead.Player) {
+                console.log(`Computer won the round:- ${round}`)
+                console.log('------------------------------------------------------------');
+                console.table(overallScore)
+            }
+            else if (calculateHead.Computer < calculateHead.Player) {
+
+                console.log(`Player won the round:- ${round}`)
+                console.log('------------------------------------------------------------');
+                console.table(overallScore)
+            }
+            else if (calculateHead.Computer == calculateHead.Player) {
+                console.log(` Round:- ${round} Match Draw\n`)
+                console.log('------------------------------------------------------------');
+                console.table(overallScore)
+            }
+
+
+            if (round == 4) {
+                if (overallScore.Computer > overallScore.Player) {
+                    console.log("Computer Won The Match\n")
+                }
+                if (overallScore.Computer < overallScore.Player) {
+                    console.log("Player Won The Match\n")
+                }
+
+                console.log("***********FINAL OUTPUT TABLE *************");
+                getCsvFilForFinalResult()
+                console.table(finalTable)
+            }
+        }
+
+        function getCsvFilForFinalResult(){
+        cs = ""
+
+        for (i of finalTable) {
+            cs += i.Round + ","
+            cs += i.Computer + ","
+            cs += i.Player+ ","
+            cs += "\r\n"
+        }
+        console.log(cs)
+
+        let tempBlob = new Blob([cs], { type: "text\csv" })
+
+        let tempUrl = window.URL.createObjectURL(tempBlob)
+        let activation = document.createElement("a")
+        activation.href = tempUrl
+
+        activation.download = "coinProblem.csv"
+        activation.click()
+        window.URL.revokeObjectURL(tempUrl)
+        activation.remove()
     }
-    else if (player1Points.length < player2Points.length) {
-        return (`\n\nThe ${playersName[1]} win the round by, ${player2Points.length - player1Points.length} points difference \n\n`)
-    }
-    else {
-        return (`\n\nThe  ${playersName[0]} &  ${playersName[0]} both are Draw, they both got  ${player1Points.length}  points\n\n`)
-    }
-}
+    </script>
+</body>
 
-function roundMatch () {
-    (function loopingFor10Matches(i) {
-        setTimeout(function() {
-            console.table((tossHeadWinMatch(nameOfPlayers,pointsOfplayer1, pointsOfplayer2, matchTotalScore, i))     )         
-          if (--i) loopingFor10Matches(i);    //  decrement i and call loopingFor10Matches again if i > 0
-        }, 1000)
-    })(10); 
+</html>
 
-      setTimeout(() => {
-        console.table(printingRoundSummary(nameOfPlayers,pointsOfplayer1,pointsOfplayer2))
-    }, 11000);    }
-
-
-count = 0
-a = setInterval(function eachRound() {
-    if(count ++ == 5){
-        clearInterval(a)
-    }
-    else{
-         roundMatch()
-        return eachRound
-    }
-   
-}() , 15000)
-    setTimeout(() => {
-        console.table(matchTotalScore )
-    }, 60000);
 
 
